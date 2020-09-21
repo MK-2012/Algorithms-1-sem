@@ -8,14 +8,14 @@ using std::string;
 
 struct Stack{
     private:
-       struct Node{
-        int value;
+    struct Node{
+        long long value;
         Node *last;
     };
-    int size = 0;
+    long long size = 0;
     Node *root = nullptr;
     public:
-    void push(int v){
+    void push(long long v){
         ++size;
         Node *new_elem = new Node;
         new_elem->value = v;
@@ -28,10 +28,10 @@ struct Stack{
             cout << "error" << endl;
         } else {
             --size;
-            int ans = root->value;
+            long long ans = root->value;
             Node *temp = root;
             root = temp->last;
-            delete(temp);
+            delete temp;
             cout << ans << endl;
         }
     }
@@ -39,31 +39,28 @@ struct Stack{
         if (!size){
             cout << "error" << endl;
         } else {
-            int ans = root->value;
-            cout << ans << endl;
+            cout << root->value << endl;
         }
     }
     void Size(){
         cout << size << endl;
     }
     void Clear(){
-        while(!(root->last == NULL)){
+        while(size){
             --size;
             Node *temp = root;
             root = temp->last;
             delete temp;
         }
-        --size;
-        delete root;
         cout << "ok" << endl;
     }
 };
 
 int main() {
     Stack st;
-    string str;
+    string str = "";
     while(true){
-        getline(cin, str);
+        cin >> str;
         switch(str[0]){
             case 'b':
                 st.Back();
@@ -82,12 +79,13 @@ int main() {
                 if(str[1] == 'o'){
                     st.pop();
                 } else {
-                    string tmp;
-                    tmp = str.substr(5, str.length());
-                    int vtmp;
-                    vtmp = stoi(tmp);
+                    long long vtmp;
+                    cin >> vtmp;
                     st.push(vtmp);
                 }
+                break;
+            default:
+                cout << endl;
                 break;
         }
     }
