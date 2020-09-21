@@ -83,20 +83,9 @@ int main() {
                     st.pop();
                 } else {
                     string tmp;
-                    unsigned int i = 5;
-                    bool f = false;
-                    if (str[i] == '-'){
-                        ++i;
-                        f = true;
-                    }
-                    for(; i < str.length(); ++i){
-                        tmp[i - 5 - f] = str[i];
-                    }
+                    tmp = str.substr(5, str.length());
                     int vtmp;
                     vtmp = stoi(tmp);
-                    if(f){
-                        vtmp = -vtmp;
-                    }
                     st.push(vtmp);
                 }
                 break;
