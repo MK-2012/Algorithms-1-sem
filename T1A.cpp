@@ -7,14 +7,14 @@ using std::endl;
 using std::string;
 
 struct Stack{
-    private:
+private:
     struct Node{
         long long value;
         Node *last;
     };
     long long size = 0;
     Node *root = nullptr;
-    public:
+public:
     void push(long long v){
         ++size;
         Node *new_elem = new Node;
@@ -58,7 +58,7 @@ struct Stack{
 
 int main() {
     Stack st;
-    string str = "";
+    string str;
     while(true){
         cin >> str;
         switch(str[0]){
@@ -68,7 +68,6 @@ int main() {
             case 'e':
                 cout << "bye" << endl;
                 return 0;
-                break;
             case 'c':
                 st.Clear();
                 break;
@@ -89,5 +88,4 @@ int main() {
                 break;
         }
     }
-    return 0;
 }
