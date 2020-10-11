@@ -1,15 +1,14 @@
 #include <iostream>
 #include <vector>
-#define ll long long
 
 using std::cin, std::cout, std::vector;
 
-ll k = 0;
+long long k = 0;
 
-vector <ll> merge(vector <ll> &A, vector <ll> &B) {
-    vector <ll> temp ={};
-    ll l = 0;
-    ll r = 0;
+vector <long long> merge(vector <long long> &A, vector <long long> &B) {
+    vector <long long> temp ={};
+    long long l = 0;
+    long long r = 0;
     while ((l < A.size()) && (r < B.size())){
         if (A[l] <= B[r]) {
             temp.push_back(A[l]);
@@ -35,38 +34,38 @@ vector <ll> merge(vector <ll> &A, vector <ll> &B) {
     return temp;
 }
 
-void m_s(vector <ll> &A, ll l, ll r) {
+void mergeSort(vector <long long> &A, long long l, long long r) {
     if (r - l <= 1)
         return;
-    vector <ll> temp = {};
-    ll med = (l + r) / 2;
-    m_s(A, l, med);
-    m_s(A, med, r);
-    vector<ll> a, b;
-    for (ll i = l; i < med; ++i)
+    vector <long long> temp = {};
+    long long med = (l + r) / 2;
+    mergeSort(A, l, med);
+    mergeSort(A, med, r);
+    vector<long long> a, b;
+    for (long long i = l; i < med; ++i)
         a.push_back(A[i]);
-    for (ll i = med; i < r; ++i)
+    for (long long i = med; i < r; ++i)
         b.push_back(A[i]);
     temp = merge(a, b);
-    for (ll i = 0; i < r - l; ++i)
+    for (long long i = 0; i < r - l; ++i)
         A[i + l] = temp[i];
 }
 
 int main() {
-    ll n = 0;
-    vector <ll> AA = {};
+    long long n = 0;
+    vector <long long> AA = {};
     std::ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     cout.tie(nullptr);
     freopen("inverse.in", "r", stdin);
     freopen("inverse.out", "w", stdout);
     cin >> n;
-    for (ll i = 0; i < n; ++i) {
-        ll tmp = 0;
+    for (long long i = 0; i < n; ++i) {
+        long long tmp = 0;
         cin >> tmp;
         AA.push_back(tmp);
     }
-    m_s(AA, 0, n);
+    mergeSort(AA, 0, n);
     cout << k << '\n';
     return 0;
 }
