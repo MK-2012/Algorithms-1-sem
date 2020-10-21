@@ -18,7 +18,7 @@ private:
             Pair temp_pair;
             temp_pair = heap[i];
             heap[i] = heap[i / 2];
-            heap [i / 2] = temp_pair;
+            heap[i / 2] = temp_pair;
             int64_t temp;
             temp = alignment[heap[i].req];
             alignment[heap[i].req] = alignment[heap[i / 2].req];
@@ -42,7 +42,7 @@ private:
                 Pair temp_pair;
                 temp_pair = heap[i];
                 heap[i] = heap[j];
-                heap [j] = temp_pair;
+                heap[j] = temp_pair;
                 int64_t temp;
                 temp = alignment[heap[i].req];
                 alignment[heap[i].req] = alignment[heap[j].req];
