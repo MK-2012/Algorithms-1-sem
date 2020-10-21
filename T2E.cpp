@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 
-using std::cin, std::cout, std::vector, std::string;
+using std::cin, std::cout, std::vector;
 
 class Heap {
 private:
@@ -85,31 +85,18 @@ int main() {
     cin.tie(nullptr);
     cout.tie(nullptr);
     Heap heap;
-    int64_t n;
-    cin >> n;
-    for (int64_t i = 0; i < n; ++i) {
-        string str;
-        int64_t a = 0;
-        int64_t delta = 0;
-        cin >> str;
-        switch (str[0]) {
-            case 'i':
-                cin >> a;
-                heap.insert(a);
-                break;
-            case 'g':
-                int64_t temp;
-                temp = heap.getMin();
-                cout << temp << '\n';
-                break;
-            case 'e':
-                heap.extractMin();
-                break;
-            case 'd':
-                cin >> a >> delta;
-                heap.decreaseKey(a, delta);
-                break;
-        }
+    int64_t N, K;
+    cin >> N >> K;
+    for (int64_t i = 0; i < N; ++i) {
+        int64_t tmp;
+        cin >> tmp;
+        heap.insert(tmp);
     }
+    for (int64_t i = 0; i < K; ++i) {
+        int64_t tmp = heap.getMin();
+        cout << tmp << " ";
+        heap.extractMin();
+    }
+    cout << '\n';
     return 0;
 }
