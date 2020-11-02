@@ -14,7 +14,7 @@ private:
     vector <int64_t> alignment = {-1};
     void siftUp(int64_t ind) {
         int64_t i = ind;
-        while ((i > 1) && (heap[i].val < heap[i / 2].val)) {
+        while ((i > 1) && (heap[i].val > heap[i / 2].val)) {
             Pair temp_pair;
             temp_pair = heap[i];
             heap[i] = heap[i / 2];
@@ -33,7 +33,7 @@ private:
             if (heap[2 * i].val < heap[i].val) {
                 j = 2 * i;
             }
-            if ((2 * i + 1 <= size) && (heap[2 * i + 1].val < heap[i].val) && ((j == -1) || (heap[2 * i].val > heap[2 * i + 1].val))) {
+            if ((2 * i + 1 <= size) && (heap[2 * i + 1].val > heap[i].val) && ((j == -1) || (heap[2 * i].val < heap[2 * i + 1].val))) {
                 j = 2 * i + 1;
             }
             if (j == -1) {
@@ -87,10 +87,17 @@ int main() {
     Heap heap;
     int64_t N, K;
     cin >> N >> K;
+    int64_t size = 0;
     for (int64_t i = 0; i < N; ++i) {
         int64_t tmp;
         cin >> tmp;
-        heap.insert(tmp);
+        if (size < K) {
+            ++size;
+            heap.insert(tmp);
+        } else if (tmp < heap.getMin()) {
+            heap.extractMin();
+            heap.insert(tmp);
+        }
     }
     for (int64_t i = 0; i < K; ++i) {
         int64_t tmp = heap.getMin();
