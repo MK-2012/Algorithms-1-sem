@@ -9,12 +9,6 @@ double approx(const double& val) {
     double temp = val * 10000000;
     temp = round(temp);
     temp /= 10000000;
-    return val;
-}
-double tapprox(const double& val) {
-    double temp = val * 10000000;
-    temp = round(temp);
-    temp /= 10000000;
     return temp;
 }
 
@@ -25,12 +19,12 @@ struct Point {
 
     Point() = default;
     explicit Point (const std::pair<double, double>& p) {
-        x=approx(p.first);
-        y=approx(p.second);
+        x = p.first;
+        y = p.second;
     }
     Point (const double& xx, const double& yy) {
-        x=approx(xx);
-        y=approx(yy);
+        x = xx;
+        y = yy;
     }
     Point (Point p, Point pp) {
         x = pp.x - p.x;
@@ -58,8 +52,6 @@ struct Point {
     Point& operator+=(const Point& p) {
         x += p.x;
         y += p.y;
-        x = approx(x);
-        y = approx(y);
         return *this;
     }
     Point& operator-=(const Point& p) {
@@ -69,19 +61,15 @@ struct Point {
     Point& operator*=(const double& v) {
         x *= v;
         y *= v;
-        x = approx(x);
-        y = approx(y);
         return *this;
     }
     Point& operator/=(const double& v) {
         x /= v;
         y /= v;
-        x = approx(x);
-        y = approx(y);
         return *this;
     }
     double operator*(const Point& a) const{
-        return approx(x * a.y - y * a.x);
+        return (x * a.y - y * a.x);
     }
 
     [[nodiscard]] double len() const {
@@ -135,11 +123,10 @@ double distanse(const Point& a, const Point& b) {
     double dx = b.x - a.x;
     double dy = b.y - a.y;
     double dist = sqrt(dx * dx + dy * dy);
-    dist = approx(dist);
     return dist;
 }
 
-bool sCmp(const Point& p, const Point& pp) {
+bool polyCmp(const Point& p, const Point& pp) {
     if (fabs(p.x - pp.x) < 1e-7)
         return p.y < pp.y;
     return p.x < pp.x;
@@ -187,9 +174,9 @@ struct Line {
         C = - A * p.x - B * p.y;
     }
     Line(const double& AA, const double& BB, const double& CC) {
-        A = approx(AA);
-        B = approx(BB);
-        C = approx(CC);
+        A = AA;
+        B = BB;
+        C = CC;
     }
     ~Line() = default;
 
@@ -236,7 +223,6 @@ double distance(const Point& a, const Line& l) {
     double num = std::abs(l.A * a.x + l.B * a.y + l.C);
     double den = std::abs(l.A * l.A + l.B * l.B);
     double dist = num / den;
-    dist = approx(dist);
     return dist;
 }
 
@@ -270,7 +256,7 @@ struct Ellipse: public Shape {
 
     Ellipse() = default;
     Ellipse(const Point& f, const Point& g, const double& aa) {
-        a = tapprox(aa / 2);
+        a = approx(aa / 2);
         F1 = f;
         F2 = g;
     }
@@ -278,7 +264,7 @@ struct Ellipse: public Shape {
 
     bool operator==(const Shape& another) const final {
         try {
-            [[maybe_unused]]Ellipse temp = dynamic_cast<const Ellipse&>(another);
+            [[maybe_unused]]Ellipse dummy = dynamic_cast<const Ellipse&>(another);
         } catch (...) {
             return false;
         }
@@ -291,7 +277,7 @@ struct Ellipse: public Shape {
     }
     [[nodiscard]] bool isSimilarTo(const Shape& another) const final {
         try {
-            [[maybe_unused]]Ellipse temp = dynamic_cast<const Ellipse&>(another);
+            [[maybe_unused]]Ellipse dummy = dynamic_cast<const Ellipse&>(another);
         } catch (...) {
             return false;
         }
@@ -309,20 +295,18 @@ struct Ellipse: public Shape {
     }
     [[nodiscard]] Point center() const{
         Point temp;
-        temp.x = approx((F1.x + F2.x) / 2);
-        temp.y = approx((F1.y + F2.y) / 2);
+        temp.x = ((F1.x + F2.x) / 2);
+        temp.y = ((F1.y + F2.y) / 2);
         return temp;
     }
     [[nodiscard]] double getB() const{
         double temp = distanse(center(), F1);
         double B = sqrt(a * a - temp * temp);
-        B = approx(B);
         return B;
     }
     [[nodiscard]] double eccentricity() const {
         double b = getB();
         double temp = sqrt(a * a - b * b) / a;
-        temp = approx(temp);
         return temp;
     }
     [[nodiscard]] std::pair<Line, Line> directrices() const {
@@ -335,13 +319,13 @@ struct Ellipse: public Shape {
         return {dir1, dir2};
     };
     [[nodiscard]] double area() const override {
-        return approx(M_PI * a * getB());
+        return (M_PI * a * getB());
     }
     [[nodiscard]] double perimeter() const override {
-        return approx(4 * a * std::comp_ellint_2(eccentricity()));
+        return (4 * a * std::comp_ellint_2(eccentricity()));
     }
     [[nodiscard]] bool containsPoint(const Point& p) const override {
-        return (tapprox(distanse(p, F1) + distanse(p, F2)) <= tapprox(2 * a));
+        return (approx(distanse(p, F1) + distanse(p, F2)) <= approx(2 * a));
     }
     void rotate(const Point& center, const double& angle) {
         F1 = F1.rotate(center, angle);
@@ -383,33 +367,33 @@ struct Polygon: public Shape {
     Polygon(const std::initializer_list<const Point>& v) {
         points.assign(v.begin(), v.end());
     }
-    void recursive_construct(const Point& a) {
+    void recursiveConstruct(const Point& a) {
         points.push_back(a);
     }
     template<typename... Args>
-    void recursive_construct(const Point& a, Args... args) {
+    void recursiveConstruct(const Point& a, Args... args) {
         points.push_back(a);
-        recursive_construct(args...);
+        recursiveConstruct(args...);
     }
     template<typename... Args>
     explicit Polygon(Args... args) {
-        recursive_construct(args...);
+        recursiveConstruct(args...);
     }
     ~Polygon() override = default;
 
     bool operator==(const Shape& another) const final {
         try {
-            [[maybe_unused]]Polygon ppp = dynamic_cast<const Polygon&>(another);
+            [[maybe_unused]]Polygon dummy = dynamic_cast<const Polygon&>(another);
         } catch (const std::bad_cast& e) {
             return false;
         }
         Polygon poly = dynamic_cast<const Polygon&>(another);
-        std::vector<Point> v1 = points;
-        std::vector<Point> v2 = poly.points;
-        sort(v1.begin(), v1.end(), &sCmp);
-        sort(v2.begin(), v2.end(), &sCmp);
-        for (size_t i = 0; i < v1.size(); ++i) {
-            if (fabs(v1[i].x - v2[i].x) > eps || fabs(v1[i].y - v2[i].y) > eps)
+        std::vector<Point> our_points = points;
+        std::vector<Point> their_points = poly.points;
+        sort(our_points.begin(), our_points.end(), &polyCmp);
+        sort(their_points.begin(), their_points.end(), &polyCmp);
+        for (size_t i = 0; i < our_points.size(); ++i) {
+            if (fabs(our_points[i].x - their_points[i].x) > eps || fabs(our_points[i].y - their_points[i].y) > eps)
                 return false;
         }
         return true;
@@ -423,27 +407,26 @@ struct Polygon: public Shape {
         return points;
     }
     [[nodiscard]] bool isConvex() const{
-        bool f = true;
-        double sp = (points[1] - points[0]) * (points[points.size() - 1] - points[0]);
-        bool sign = (sp >= 0);
+        double vector_product = (points[1] - points[0]) * (points[points.size() - 1] - points[0]);
+        bool sign = (vector_product >= 0);
         for (size_t i = 1; i < points.size() - 1; ++i) {
-            sp = (points[i + 1] - points[i]) * (points[i - 1] - points[i]);
-            if ((sp >= 0) != sign) {
-                f = false;
+            vector_product = (points[i + 1] - points[i]) * (points[i - 1] - points[i]);
+            if ((vector_product >= 0) != sign) {
+                return false;
             }
         }
-        sp = (points[0] - points[points.size() - 1]) * (points[points.size() - 2] - points[points.size() - 1]);
-        if ((sp >= 0) != sign) {
-            f = false;
+        vector_product = (points[0] - points[points.size() - 1]) * (points[points.size() - 2] - points[points.size() - 1]);
+        if ((vector_product >= 0) != sign) {
+            return false;
         }
-        return f;
+        return true;
     }
     [[nodiscard]] double area() const override {
         double sum = 0;
         for (size_t i = 1; i < points.size() - 1; ++i) {
             sum += std::abs((points[i] - points[0]) * (points[i + 1] - points[0]));
         }
-        sum = approx(sum / 2);
+        sum /= 2;
         return sum;
     }
     [[nodiscard]] double perimeter() const override {
@@ -451,7 +434,6 @@ struct Polygon: public Shape {
         for (size_t i = 0; i < points.size(); ++i) {
             sum += (points[i] - points[(i + 1) % points.size()]).len();
         }
-        sum = approx(sum);
         return sum;
     }
     Point center() {
@@ -510,24 +492,24 @@ struct Polygon: public Shape {
     }
     [[nodiscard]] bool isSimilarTo(const Shape& another) const final {
         try {
-            [[maybe_unused]]Polygon ppp = dynamic_cast<const Polygon&>(another);
+            [[maybe_unused]]Polygon dummy = dynamic_cast<const Polygon&>(another);
         } catch (...) {
             return false;
         }
         const auto& poly = dynamic_cast<const Polygon&>(another);
-        const std::vector<Point>& v1 = points;
-        const std::vector<Point>& v2 = poly.points;
-        if (v1.size() != v2.size())
+        const std::vector<Point>& our_points = points;
+        const std::vector<Point>& their_points = poly.points;
+        if (our_points.size() != their_points.size())
             return false;
         double k = perimeter() / poly.perimeter();
-        size_t n = v1.size();
+        size_t n = our_points.size();
         for (size_t s = 0; s < n; ++s) {
             for (int d_ = -1; d_ < 2; d_ += 2) {
                 bool maybe = true;
                 for (size_t i = 1; i < n; ++i) {
                     size_t j = size_t(2 * int(n) + int(s) + d_ * int(i)) % n;
-                    double l1 = (v1[i] - v1[0]).len();
-                    double l2 = (v2[j] - v2[s]).len();
+                    double l1 = (our_points[i] - our_points[0]).len();
+                    double l2 = (their_points[j] - their_points[s]).len();
                     if (fabs(l2 * k - l1) > eps)
                         maybe = false;
                 }
@@ -592,15 +574,15 @@ struct Triangle: public Polygon {
         return c;
     }
     Circle circumscribedCircle() {
-        Point c = this->orthocenter();
+        Point c = orthocenter();
         return Circle(c, (c - points[0]).len());
     }
     Circle inscribedCircle() {
         Point p10 = (points[0] - points[1]);
         p10 = p10 / p10.len();
-        Point p12 = (points[2] - points[1]);
-        p12 = p12 / p12.len();
-        Line l1(points[1], points[1] + p10 + p12);
+        Point p11 = (points[2] - points[1]);
+        p11 = p11 / p11.len();
+        Line l1(points[1], points[1] + p10 + p11);
         Point p20 = (points[0] - points[2]);
         p20 = p20 / p20.len();
         Point p21 = (points[1] - points[2]);
