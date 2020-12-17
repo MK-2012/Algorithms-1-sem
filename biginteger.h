@@ -2,19 +2,21 @@
 #include <vector>
 #include <string>
 
+const int64_t BASE = 10;
+
 class BigInteger {
 private:
-    std::vector <int> z;
+    std::vector <int> number;
     bool negative = false;
     void normalize(BigInteger& x) {
         int64_t delta = 0;
-        for (uint64_t i = 0; i < x.z.size(); ++i) {
-            x.z[i] += delta;
-            delta = x.z[i] / 10;
-            x.z[i] = x.z[i] % 10;
-            if (x.z[i] < 0) {
+        for (uint64_t i = 0; i < x.number.size(); ++i) {
+            x.number[i] += delta;
+            delta = x.number[i] / BASE;
+            x.number[i] = x.number[i] % BASE;
+            if (x.number[i] < 0) {
                 --delta;
-                x.z[i] += 10;
+                x.number[i] += BASE;
             }
         }
         if (delta < 0) {
@@ -22,39 +24,39 @@ private:
             delta = -delta;
         }
         while (delta > 0) {
-            x.z.push_back(delta % 10);
-            delta /= 10;
+            x.number.push_back(delta % BASE);
+            delta /= BASE;
         }
-        while ((x.z[x.z.size() - 1] == 0) && (x.z.size() > 1)) {
-            x.z.pop_back();
+        while ((x.number[x.number.size() - 1] == 0) && (x.number.size() > 1)) {
+            x.number.pop_back();
         }
-        if ((x.z.size() == 1) && (x.z[0] == 0)) {
+        if ((x.number.size() == 1) && (x.number[0] == 0)) {
             x.negative = false;
         }
     }
 public:
     BigInteger() {
-        z.resize(0);
-        z.push_back(0);
+        number.resize(0);
+        number.push_back(0);
     }
     BigInteger(const int64_t& x) {
-        z.resize(0);
+        number.resize(0);
         int64_t temp = x;
         if (temp == 0) {
-            z.push_back(0);
+            number.push_back(0);
         } else {
             if (temp < 0) {
                 temp = -temp;
                 negative = true;
             }
             while (temp > 0) {
-                z.push_back(temp % 10);
-                temp /= 10;
+                number.push_back(temp % BASE);
+                temp /= BASE;
             }
         }
     }
     BigInteger(const std::string& s) {
-        z.resize(0);
+        number.resize(0);
         std::string s1;
         uint64_t i = 0;
         while (i < s.size() && (s[i] == 0 || s[i] == '-'))
@@ -62,18 +64,18 @@ public:
         for (; i < s.size(); ++i)
             s1 += s[i];
         int n = s1.size();
-        z.resize(n);
+        number.resize(n);
         if (s[0] == '-')
             negative = true;
         for (int64_t j = 0 ; j < n; ++j)
-            z[j] = s1[n - 1 - j] - '0';
+            number[j] = s1[n - 1 - j] - '0';
     }
     BigInteger(const BigInteger& x) {
         negative = x.negative;
-        z = x.z;
+        number = x.number;
     }
     ~BigInteger() {
-        z.clear();
+        number.clear();
     }
 
     friend BigInteger operator-(const BigInteger& a, const BigInteger& b);
@@ -81,32 +83,32 @@ public:
     friend BigInteger operator*(const BigInteger& a, const BigInteger& b);
     friend BigInteger operator/(const BigInteger& a, const BigInteger& b);
     friend BigInteger operator%(const BigInteger& a, const BigInteger& b);
-    BigInteger& operator=(const BigInteger& x) = default;
-    bool operator==(const BigInteger& x) const{
-        return ((x.z == z) && (x.negative == negative));
+    BigInteger& operator=(const BigInteger& right) = default;
+    bool operator==(const BigInteger& right) const{
+        return ((right.number == number) && (right.negative == negative));
     }
-    bool operator!=(const BigInteger& x) const{
-        return !(x == *this);
+    bool operator!=(const BigInteger& right) const{
+        return !(right == *this);
     }
-    bool operator<(const BigInteger& x) const {
-        if (x == *this) {
+    bool operator<(const BigInteger& right) const {
+        if (right == *this) {
             return false;
         }
-        if ((x.negative) && (!this->negative)) {
+        if ((right.negative) && (!this->negative)) {
             return false;
-        } else if ((!x.negative) && (this->negative)) {
+        } else if ((!right.negative) && (this->negative)) {
             return true;
-        } else if ((!x.negative) && (!this->negative)) {
-            if (x.z.size() > z.size()) {
+        } else if ((!right.negative) && (!this->negative)) {
+            if (right.number.size() > number.size()) {
                 return true;
-            } else if (x.z.size() < z.size()) {
+            } else if (right.number.size() < number.size()) {
                 return false;
             } else {
-                int64_t i = z.size() - 1;
+                int64_t i = number.size() - 1;
                 while (i >= 0) {
-                    if (z[i] < x.z[i]) {
+                    if (number[i] < right.number[i]) {
                         return true;
-                    } else if (z[i] > x.z[i]) {
+                    } else if (number[i] > right.number[i]) {
                         return false;
                     } else {
                         --i;
@@ -115,16 +117,16 @@ public:
                 return false;
             }
         } else {
-            if (x.z.size() > z.size()) {
+            if (right.number.size() > number.size()) {
                 return false;
-            } else if (x.z.size() < z.size()) {
+            } else if (right.number.size() < number.size()) {
                 return true;
             } else {
-                int64_t i = z.size() - 1;
+                int64_t i = number.size() - 1;
                 while (i >= 0) {
-                    if (z[i] < x.z[i])
+                    if (number[i] < right.number[i])
                         return false;
-                    else if (z[i] > x.z[i])
+                    else if (number[i] > right.number[i])
                         return true;
                     else
                         --i;
@@ -133,18 +135,18 @@ public:
             }
         }
     }
-    bool operator<=(const BigInteger& x) const{
-        return ((*this < x) || (*this == x));
+    bool operator<=(const BigInteger& right) const{
+        return ((*this < right) || (*this == right));
     }
-    bool operator>(const BigInteger& x) const{
-        return (x < *this);
+    bool operator>(const BigInteger& right) const{
+        return (right < *this);
     }
-    bool operator>=(const BigInteger& x) const{
-        return ((*this > x) || (*this == x));
+    bool operator>=(const BigInteger& right) const{
+        return ((*this > right) || (*this == right));
     }
     explicit operator bool() {
         bool f;
-        if ((z.size() > 1) || (z[0] != 0)) {
+        if ((number.size() > 1) || (number[0] != 0)) {
             f = true;
         } else {
             f = false;
@@ -158,33 +160,33 @@ public:
         }
         return temp;
     }
-    BigInteger& operator+=(const BigInteger& x) {
-        int64_t n = std::max(x.z.size(), z.size());
-        z.resize(n);
-        if (x.negative == negative) {
-            for (uint64_t i = 0; i < x.z.size(); ++i) {
-                z[i] += x.z[i];
+    BigInteger& operator+=(const BigInteger& right) {
+        int64_t n = std::max(right.number.size(), number.size());
+        number.resize(n);
+        if (right.negative == negative) {
+            for (uint64_t i = 0; i < right.number.size(); ++i) {
+                number[i] += right.number[i];
             }
         } else {
             if (!negative) {
-                if (*this > -x) {
-                    for (uint64_t i = 0; i < x.z.size(); ++i) {
-                        z[i] -= x.z[i];
+                if (*this > -right) {
+                    for (uint64_t i = 0; i < right.number.size(); ++i) {
+                        number[i] -= right.number[i];
                     }
                 } else {
-                    for (uint64_t i = 0; i < x.z.size(); ++i) {
-                        z[i] = x.z[i] - z[i];
+                    for (uint64_t i = 0; i < right.number.size(); ++i) {
+                        number[i] = right.number[i] - number[i];
                     }
                     negative = !negative;
                 }
             } else {
-                if (-*this > x) {
-                    for (uint64_t i = 0; i < x.z.size(); ++i) {
-                        z[i] -= x.z[i];
+                if (-*this > right) {
+                    for (uint64_t i = 0; i < right.number.size(); ++i) {
+                        number[i] -= right.number[i];
                     }
                 } else {
-                    for (uint64_t i = 0; i < x.z.size(); ++i) {
-                        z[i] = x.z[i] - z[i];
+                    for (uint64_t i = 0; i < right.number.size(); ++i) {
+                        number[i] = right.number[i] - number[i];
                     }
                     negative = !negative;
                 }
@@ -193,19 +195,19 @@ public:
         normalize(*this);
         return *this;
     }
-    BigInteger& operator-=(const BigInteger& x) {
-        int64_t n = std::max(x.z.size(), z.size());
-        z.resize(n);
-        *this += -x;
+    BigInteger& operator-=(const BigInteger& right) {
+        int64_t n = std::max(right.number.size(), number.size());
+        number.resize(n);
+        *this += -right;
         return *this;
     }
-    BigInteger& operator*=(const BigInteger& x) {
+    BigInteger& operator*=(const BigInteger& right) {
         BigInteger temp;
-        temp.negative = (negative xor x.negative);
-        temp.z.resize(x.z.size() + z.size());
-        for (uint64_t i = 0; i < z.size(); ++i) {
-            for (uint64_t j = 0; j < x.z.size(); ++j) {
-                temp.z[i + j] += z[i] * x.z[j];
+        temp.negative = (negative xor right.negative);
+        temp.number.resize(right.number.size() + number.size());
+        for (uint64_t i = 0; i < number.size(); ++i) {
+            for (uint64_t j = 0; j < right.number.size(); ++j) {
+                temp.number[i + j] += number[i] * right.number[j];
             }
         }
         *this = temp;
@@ -216,30 +218,30 @@ public:
         }
         return *this;
     }
-    BigInteger& operator/=(const BigInteger& x) {
-        BigInteger temp = x;
+    BigInteger& operator/=(const BigInteger& right) {
+        BigInteger temp = right;
         temp.negative = false;
-        uint64_t x_size = x.z.size();
+        uint64_t x_size = right.number.size();
         int64_t des = 0;
         BigInteger copy = *this;
         copy.negative = false;
         BigInteger res;
-        if ((x.z.size() > z.size()) || ((x.z.size() == z.size()) && (x.z[z.size() - 1] > z[z.size() - 1]))) {
+        if ((right.number.size() > number.size()) || ((right.number.size() == number.size()) && (right.number[number.size() - 1] > number[number.size() - 1]))) {
             *this = 0;
             return *this;
         } else {
-            for (uint64_t i = 0; i < z.size() - x.z.size(); ++i) {
-                temp *= 10;
+            for (uint64_t i = 0; i < number.size() - right.number.size(); ++i) {
+                temp *= BASE;
                 ++des;
             }
             if (copy - temp < 0) {
-                for (uint64_t i = 0; i < temp.z.size() - 1; ++i) {
-                  temp.z[i] = temp.z[i + 1];
+                for (uint64_t i = 0; i < temp.number.size() - 1; ++i) {
+                  temp.number[i] = temp.number[i + 1];
                 }
-                temp.z.pop_back();
+                temp.number.pop_back();
                 --des;
             }
-            while ((copy > 0) && (temp.z.size() >= x_size)) {
+            while ((copy > 0) && (temp.number.size() >= x_size)) {
                 int64_t k = 1;
                 BigInteger mem = temp;
                 while (copy - temp >= 0) {
@@ -249,26 +251,26 @@ public:
                 temp -= mem;
                 --k;
                 copy -= temp;
-                res.z.push_back(k);
+                res.number.push_back(k);
                 temp = mem;
                 int64_t delta = 0;
-                while ((copy - temp < 0) && (temp.z.size() >= x_size)) {
-                    for (uint64_t i = 0; i < temp.z.size() - 1; ++i) {
-                        temp.z[i] = temp.z[i + 1];
+                while ((copy - temp < 0) && (temp.number.size() >= x_size)) {
+                    for (uint64_t i = 0; i < temp.number.size() - 1; ++i) {
+                        temp.number[i] = temp.number[i + 1];
                     }
-                    temp.z.pop_back();
+                    temp.number.pop_back();
                     ++delta;
                 }
-                if (temp.z.size() < x_size) {
+                if (temp.number.size() < x_size) {
                     for (int64_t i = 0; i < des; ++i) {
-                        res.z.push_back(0);
+                        res.number.push_back(0);
                     }
                     std::vector <int> temp_vector;
-                    for (int64_t i = res.z.size() - 1; i >= 0; --i) {
-                        temp_vector.push_back(res.z[i]);
+                    for (int64_t i = res.number.size() - 1; i >= 0; --i) {
+                        temp_vector.push_back(res.number[i]);
                     }
-                    res.z = temp_vector;
-                    res.negative = (negative xor x.negative);
+                    res.number = temp_vector;
+                    res.negative = (negative xor right.negative);
                     normalize(res);
                     if (res == 0) {
                         res.negative = false;
@@ -278,26 +280,26 @@ public:
                 } else {
                     des -= delta;
                     for (int64_t i = 0; i < delta - 1; ++i) {
-                        res.z.push_back(0);
+                        res.number.push_back(0);
                     }
                 }
             }
-            std::vector <int> temp_vector;
-            for (int64_t i = res.z.size() - 1; i >= 0; --i) {
-                temp_vector.push_back(res.z[i]);
+            std::vector<int> temp_vector;
+            for (int64_t i = res.number.size() - 1; i >= 0; --i) {
+                temp_vector.push_back(res.number[i]);
             }
-            res.z = temp_vector;
-            res.negative = (negative xor x.negative);
+            res.number = temp_vector;
+            res.negative = (negative xor right.negative);
             normalize(res);
             *this = res;
             return *this;
         }
     }
-    BigInteger& operator%=(const BigInteger& x) {
-        bool f = negative xor x.negative;
+    BigInteger& operator%=(const BigInteger& right) {
+        bool f = negative xor right.negative;
         negative = false;
-        BigInteger copy = *this / x;
-        copy *= x;
+        BigInteger copy = *this / right;
+        copy *= right;
         copy.negative = false;
         *this -= copy;
         negative = f;
@@ -325,25 +327,25 @@ public:
 
     std::string toString() const{
         std::string s;
-        if (z.empty()) {
+        if (number.empty()) {
             s = "0";
             return s;
         }
         if (!negative) {
-            for (int64_t i = z.size() - 1; i >= 0; --i) {
-                s += static_cast<char>(z[i] + 48);
+            for (int64_t i = number.size() - 1; i >= 0; --i) {
+                s += static_cast<char>(number[i] + 48);
             }
             return s;
         } else {
             s = "-";
-            for (int64_t i = z.size() - 1; i >= 0; --i) {
-                s += static_cast<char>(z[i] + 48);
+            for (int64_t i = number.size() - 1; i >= 0; --i) {
+                s += static_cast<char>(number[i] + 48);
             }
             return s;
         }
     }
     void clear() {
-        z.clear();
+        number.clear();
         negative = false;
     }
     BigInteger abs() const {
@@ -393,14 +395,42 @@ class Rational {
 private:
     BigInteger num;
     BigInteger den;
-    BigInteger NOD(const BigInteger& x, const BigInteger& y) const{
+    /*BigInteger GCD(const BigInteger& x, const BigInteger& y) const {
+        if (x == y) {
+            return x;
+        }
+        if (x == 0) {
+            return y;
+        }
+        if (y == 0) {
+            return x;
+        }
+        if (x % 2 == 0) {
+            if (y % 2 == 1) {
+                return GCD(x / 2, y);
+            } else {
+                return 2 * GCD(x / 2, y / 2);
+            }
+        } else {
+            if (y % 2 == 0) {
+                return GCD(x, y / 2);
+            }
+            if (x > y) {
+                return GCD((x - y) / 2, y);
+            }
+            else {
+                return GCD((y - x) / 2, x);
+            }
+        }
+    } */
+    BigInteger GCD(const BigInteger& x, const BigInteger& y) const {
         if (y == 0)
             return x;
         BigInteger temp = x % y;
-        return NOD(y, temp);
+        return GCD(y, temp);
     }
     void normalise(Rational& x) {
-        BigInteger d = NOD(x.den, x.num);
+        BigInteger d = GCD(x.den, x.num);
         d = d.abs();
         x.den /= d;
         x.num /= d;
@@ -409,8 +439,8 @@ private:
             x.num = -x.num;
         }
     }
-    void sameDen(Rational& x, Rational& y) {
-        BigInteger temp = NOD(x.den, y.den).abs();
+    void toSameDen(Rational& x, Rational& y) {
+        BigInteger temp = GCD(x.den, y.den).abs();
         BigInteger copy = x.den;
         x.num *= (y.den / temp);
         x.den *= (y.den / temp);
@@ -436,41 +466,41 @@ public:
     }
     ~Rational() = default;
 
-    Rational& operator=(const Rational& x) = default;
-    bool operator==(const Rational& x) const{
-        if ((den == x.den) && (num == x.num)) {
+    Rational& operator=(const Rational& right) = default;
+    bool operator==(const Rational& right) const{
+        if ((den == right.den) && (num == right.num)) {
             return true;
         } else {
             return false;
         }
     }
-    bool operator!=(const Rational& x) const {
-        return !(*this == x);
+    bool operator!=(const Rational& right) const {
+        return !(*this == right);
     }
-    bool operator<(const Rational& x) const {
-        if (*this == x) {
+    bool operator<(const Rational& right) const {
+        if (*this == right) {
             return false;
         }
-        if ((num < 0) && (x.num > 0)) {
+        if ((num < 0) && (right.num > 0)) {
             return true;
-        } else if ((num > 0) && (x.num < 0)) {
+        } else if ((num > 0) && (right.num < 0)) {
             return false;
         } else {
             Rational a = *this;
-            Rational b = x;
+            Rational b = right;
             a.num *= b.den;
             b.num *= a.den;
             return (a.num < b.num);
         }
     }
-    bool operator<=(const Rational& x) const{
-        return ((*this < x) || (*this == x));
+    bool operator<=(const Rational& right) const{
+        return ((*this < right) || (*this == right));
     }
-    bool operator>(const Rational& x) const{
-        return (x < *this);
+    bool operator>(const Rational& right) const{
+        return (right < *this);
     }
-    bool operator>=(const Rational& x) const{
-        return ((*this > x) || (*this == x));
+    bool operator>=(const Rational& right) const{
+        return ((*this > right) || (*this == right));
     }
     explicit operator double() const{
         std::string str;
@@ -483,26 +513,26 @@ public:
         temp.num *= -1;
         return temp;
     }
-    Rational& operator+=(const Rational& x) {
-        Rational copy = x;
-        sameDen(*this, copy);
+    Rational& operator+=(const Rational& right) {
+        Rational copy = right;
+        toSameDen(*this, copy);
         num += copy.num;
         normalise(*this);
         return *this;
     }
-    Rational& operator-=(const Rational& x) {
-        *this += -x;
+    Rational& operator-=(const Rational& right) {
+        *this += -right;
         return *this;
     }
-    Rational& operator*=(const Rational& x) {
-        num *= x.num;
-        den *= x.den;
+    Rational& operator*=(const Rational& right) {
+        num *= right.num;
+        den *= right.den;
         normalise(*this);
         return *this;
     }
-    Rational& operator/=(const Rational& x) {
-        BigInteger temp = num * x.den;
-        den *= x.num;
+    Rational& operator/=(const Rational& right) {
+        BigInteger temp = num * right.den;
+        den *= right.num;
         num = temp;
         normalise(*this);
         return *this;
@@ -527,7 +557,7 @@ public:
         std::string str;
         Rational copy = *this;
         for (size_t i = 0; i < precision; ++i) {
-            copy *= 10;
+            copy *= BASE;
         }
         str = (copy.num / copy.den).toString();
         int64_t i = str.length();
